@@ -1,0 +1,21 @@
+# Block direct web access to .env files
+<FilesMatch "^\.env">
+    Require all denied
+</FilesMatch>
+
+# Block direct web access to test files
+<FilesMatch "^test_.*\.php$">
+    Require all denied
+</FilesMatch>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Forward Authorization header to PHP (XAMPP Apache strips it by default)
+    RewriteCond %{HTTP:Authorization} ^(.+)
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%1]
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php [QSA,L]
+</IfModule>
